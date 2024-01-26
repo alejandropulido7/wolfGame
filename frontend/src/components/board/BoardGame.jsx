@@ -1,38 +1,53 @@
 import React, { useState, useEffect } from 'react'
 import socket from '../../config/socket';
 import {hasCookie, setCookie, getCookie} from '../../utils/cookies'
-import {useParams} from 'react-router-dom';
+import {useParams, useNavigate} from 'react-router-dom';
+import {getSession} from '../../services/sessionGame'
 
 const BoardGame = () => {
 
-    const [codeSesion, setCodeSesion] = useState('');
-
-    const [players, setPlayers] = useState([]);
-    
+    const [codeSession, setCodeSession] = useState('');
+    const [session, setSession] = useState({});
+    const [players, setPlayers] = useState([]);    
     const {idRoom} = useParams();
+    const navigate = useNavigate();
     
-
-    useEffect(() => {
-
-        setCodeSesion(idRoom);
-
+    const getSessionCreated = async (idRoom) => {
         
-        socket.on('status', (msg) => {
-            console.log(msg)
-        });
+        const sessionCreated = await getSession(idRoom);
+        if(sessionCreated){
+            setSession(sessionCreated);
+            socket.emit('createNewGame', sessionCreated.id);
+        } else {
+            navigate('../room');
+        }
+    }    
 
+    useEffect(() => {        
+        setCodeSession(idRoom);
+        getSessionCreated(idRoom);
     },[]);
+
+    socket.on('status', (msg) => {
+        console.log(msg)
+    });
 
     socket.on('playerJoinedRoom', (players) => {
         setPlayers(players);
     });
 
     console.log(players);
+    console.log(session);
 
     return (
         <div>
-            <h3>{codeSesion}</h3>
-            <h2>Eu</h2>
+            <div>
+                <h3>Game configuration</h3>
+                <h4>{codeSession}</h4>
+                <p>Cantidad lobos: {session.quatity_wolfs} - cantidad carniceros: {session.quatity_butcher} </p>
+                <p>Tiempo votacion: {session.voting_time} - tiempo trivia: {session.trivia_time} </p>
+            </div>
+            <button>Ready to play</button>
             <div>
                 {
                     players.map((player) => {

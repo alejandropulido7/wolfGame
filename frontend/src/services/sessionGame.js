@@ -14,9 +14,9 @@ async function createSession(codeSession, idHost, configGame) {
     }
 }
 
-async function getSession(idHost) {
+async function getSession(idRoom) {
     try {
-        const response = await axios.get(`http://localhost:5000/api/sessions?idHost=${idHost}`); // Reemplaza con la URL de tu backend
+        const response = await axios.get(`http://localhost:5000/api/sessions?idRoom=${idRoom}`); // Reemplaza con la URL de tu backend
         return response.data;
     } catch (error) {
         console.error('Error:', error.message);

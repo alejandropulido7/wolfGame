@@ -18,15 +18,13 @@ function createSesion(req, res) {
 
 function getSesion(req, res) {
 
-    console.log('idHost: '+req.query.id);
+    console.log('idRoom: '+req.query.idRoom);
     Sesion.findOne({        
         where: {
-            id: req.query.id
-        },
-        limit: 1,
-        order: [['dateSesion', 'DESC']]
-    }).then(sesions => {
-        res.status(200).json(sesions)
+            id: req.query.idRoom
+        }
+    }).then(session => {
+        res.status(200).json(session)
     }).catch(err => {
         return res.status(400).json(['An error occurred: '+err]);
     });

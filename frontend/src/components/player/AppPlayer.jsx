@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import {setCookie, getCookie} from '../../utils/cookies'
-import socket from '../../config/socket';
+import {setCookie, getCookie, hasCookie} from '../../utils/cookies'
+import { Link } from 'react-router-dom';
 
 const AppPlayer = () => {
 
@@ -8,10 +8,7 @@ const AppPlayer = () => {
   const [namePlayer, setNamePlayer] = useState('');
 
   const entrySessionGame = () => {
-    socket.emit('joinPlayerGame', {
-      gameId: codeSessionGame,
-      namePlayer
-    })
+    setCookie('namePlayer-WG', namePlayer, 1);
   }
 
   return (
@@ -25,9 +22,7 @@ const AppPlayer = () => {
           <label>Type room code: </label>
           <input type='number' name='sessionCodeMobile' onChange={(e)=>setCodeSessionGame(e.target.value)}/>
       </div>
-      <button onClick={entrySessionGame}>Start game</button>
-      <p>codeSessionGame: {codeSessionGame}</p>
-      <p>Name: {namePlayer}</p>
+      <Link to={codeSessionGame} onClick={entrySessionGame}>Start game</Link>
     </div>
   )
 }

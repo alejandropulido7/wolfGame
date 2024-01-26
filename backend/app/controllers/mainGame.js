@@ -14,13 +14,6 @@ const initializeGame = (sio, socket) => {
     io = sio 
     gameSocket = socket 
 
-    // pushes this socket to an array which stores all the active players or board sockets.
-    if(!detectMobileDevice(socket)){
-        boards.push(gameSocket)
-    } else {
-        players.push(gameSocket)
-    }
-
     // Run code when the client disconnects from their socket session. 
     gameSocket.on("disconnect", onDisconnect)
 
@@ -30,14 +23,8 @@ const initializeGame = (sio, socket) => {
     // User creates new game room after clicking 'submit' on the frontend
     gameSocket.on("joinPlayerGame", joinPlayerGame)
 
+    // gameSocket.on("otherPlayersJoinedRoom", otherPlayersJoinedRoom)
 
-
-    // createPlayer(socket, io);
-
-
-    socket.on('disconnect', () => {
-        console.log('Dispositivo desconectado');
-    });
 }
 
 
@@ -46,6 +33,7 @@ function createNewGame(gameId) {
     // Return the Room ID (gameId) and the socket ID (mySocketId) to the browser client
     this.emit('createNewGame', {gameId: gameId, mySocketId: this.id});
 
+    console.log('romm created')
     console.log(this.id)
     boards.push(gameId)
 
@@ -54,40 +42,39 @@ function createNewGame(gameId) {
 }
 
 function joinPlayerGame(dataPlayer) {
-    console.log(dataPlayer);
 
-    let currentSocket = this;
-
-    const gameId = parseInt(dataPlayer.gameId);
-    
-    let room = io.sockets.adapter.rooms.get(gameId);
-
-    console.log(io.sockets.adapter.rooms.has(gameId));
+    const currentSocket = this;
+    const gameId = dataPlayer.gameId;
+    const room = io.sockets.adapter.rooms.get(gameId);
+    dataPlayer.socketId = this.id;    
 
     if (room === undefined) {
         this.emit('status' , "This game session does not exist." );
         return
     }
 
-    
-    if(players.find(player => player.namePlayer == dataPlayer.namePlayer)){        
-        console.log('repetido')
+    if(players.find(player => player.namePlayer == dataPlayer.namePlayer)){ 
         this.emit('status' , "This name player already exist on the room." );
     } else {
         players.push(dataPlayer);
     }
     
     console.log(players)
-    currentSocket.join(gameId)
-
-    console.log(room.size)
+    currentSocket.join(gameId);
 
     io.sockets.in(gameId).emit('playerJoinedRoom', players);
-    
+    io.sockets.in(gameId).emit('otherPlayersJoinedRoom', players);
+
 }
 
+
 function onDisconnect () {
-    console.log('Device disconnect')
+    console.log('Device disconnect');
+    playerDisconected = players.find(player => player.socketId == this.id);
+    players = players.filter(player => player != playerDisconected);
+    if(players.length > 0){
+        io.sockets.in(players[0].gameId).emit('playerJoinedRoom', players);
+    }
 }
 
 module.exports = initializeGame

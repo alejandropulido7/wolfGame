@@ -3,7 +3,7 @@ const sequelize = require('../config/db');
 
 const Sesion = sequelize.define('Sesion', {
   id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.TEXT,
     primaryKey: true,
   },
   idHost: {

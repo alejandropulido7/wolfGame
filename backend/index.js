@@ -22,7 +22,7 @@ syncDatabase();
 io.on('connection', async (socket) => {
     console.log('Nuevo dispositivo conectado');
     mainGame(io, socket); 
-    // io.sockets.adapter.rooms.get().size;
+    // io.sockets.in(gameId).
 });
 
 app.use(express.json());

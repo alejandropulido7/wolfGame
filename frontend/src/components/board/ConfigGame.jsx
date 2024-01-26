@@ -3,18 +3,19 @@ import socket from '../../config/socket';
 import generateUniqueId from 'generate-unique-id';
 import {setCookie, getCookie } from '../../utils/cookies'
 import {createSession, getSession} from '../../services/sessionGame'
-import { Link, redirect } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const ConfigGame = () => {
 
     const [isPreviousGame, setIsPreviousGame] = useState(false);
     const [configGame, setConfigGame] = useState({
-        quatityWolf: 0,
-        quatityButcher: 0,
-        votingTime: 0,
-        triviaTime: 0
+        quatityWolf: 1,
+        quatityButcher: 1,
+        votingTime: 1,
+        triviaTime: 1
     });
     const [idGame, setIdGame] = useState('');
+    const navigate = useNavigate();
 
     useEffect(()=>{
 
@@ -36,12 +37,11 @@ const ConfigGame = () => {
 
     const handleSubmit = async () => {
 
-        // const sessionCreated = await createSession(idGame, getCookie('hostId-wolfGame'), configGame);
+        
         const sessionCreated = await createSession(idGame, socket.id, configGame);
-
-        socket.emit('createNewGame', sessionCreated.id);
-
-        setCookie('sessionId-wolfGame', sessionCreated.id, 1);
+        if(sessionCreated){
+            navigate(idGame);
+        }
     }
 
     const entryPreviousSession = (code) => {
@@ -59,23 +59,22 @@ const ConfigGame = () => {
                 </div>
                 <div>
                     <label>Wolf quantity: </label>
-                    <input type='number' name='quatityWolf' onChange={handleInputChange}/>
+                    <input type='number' name='quatityWolf' value={configGame.quatityWolf} onChange={handleInputChange}/>
                 </div>
                 <div>
                     <label>Butcher quantity: </label>
-                    <input type='number' name='quatityButcher' onChange={handleInputChange}/>
+                    <input type='number' name='quatityButcher' value={configGame.quatityButcher} onChange={handleInputChange}/>
                 </div>
                 <div>
                     <label>Voting time: </label>
-                    <input type='number' name='votingTime' onChange={handleInputChange}/>
+                    <input type='number' name='votingTime' value={configGame.votingTime} onChange={handleInputChange}/>
                 </div>
                 <div>
                     <label>Trivia time: </label>
-                    <input type='number' name='triviaTime' onChange={handleInputChange}/>
+                    <input type='number' name='triviaTime' value={configGame.triviaTime} onChange={handleInputChange}/>
                 </div>
-                <p>Cantidad lobos: {configGame.quatityWolf} - cantidad carniceros: {configGame.quatityButcher} </p>
-                <p>Tiempo votacion: {configGame.votingTime} - tiempo trivia: {configGame.triviaTime} </p>
-                <Link to={idGame} onClick={handleSubmit}>Start new game</Link>
+                
+                <button onClick={handleSubmit}>Start new game</button>
                 <button onClick={() => setIsPreviousGame(true)} >Join to previous game</button>
             </div>
             :

@@ -8,6 +8,7 @@ import BoardGame from './components/board/BoardGame.jsx';
 import AppBoard from './components/board/AppBoard.jsx';
 import AppPlayer from './components/player/AppPlayer.jsx';
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import BoardPlayer from './components/player/BoardPlayer.jsx';
 
 
 const router = createBrowserRouter([
@@ -50,6 +51,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path='/room' Component={ConfigGame}/>
         <Route path='/room/:idRoom' Component={BoardGame}/>
         <Route path='/player' Component={AppPlayer}/>
+        <Route path='/player/:idRoom' Component={BoardPlayer}/>
       </Routes>
     
     </BrowserRouter>

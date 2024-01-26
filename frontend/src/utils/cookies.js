@@ -3,8 +3,8 @@ import Cookies from 'js-cookie';
 const domain = import.meta.env.VITE_DOMAIN || 'localhost';
 
 
-function setCookie(name, value, expire) {
-    Cookies.set(name, value, {expires: expire, domain});    
+function setCookie(name, value, expire=1) {
+    Cookies.set(name, value, {expires: expire});    
 }
 
 function getCookie(name) {
